@@ -7,9 +7,8 @@
 
 <p align="center">
 <a href="https://discordbots.org/bot/883010250226143313?utm_source=widget">
-<img src="https://discordbots.org/api/widget/883010250226143313.png?test=123456" alt="Discord Bots" />
+    <img src="https://discordbots.org/api/widget/883010250226143313.png?test=123456" alt="Discord Bots" />
 </a>
-[![Discord Server](https://discordapp.com/api/guilds/272081064535654400/embed.png)](https://discord.gg/UPJ2xt6)
 </p>
 
 <hr>
