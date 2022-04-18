@@ -1,6 +1,6 @@
 
 <p align="center">
-<img width="65%" src="https://cdn.discordapp.com/attachments/708017680677863505/709793353478176768/lori_github_logo.png">
+<img width="65%" src="https://cdn.discordapp.com/attachments/948985394962260009/965688651168231524/beta_github01.png">
 <br>
 
 <h1 align="center">🔨 Beta™</h1>
