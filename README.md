@@ -3,7 +3,7 @@
 <img width="65%" src="https://cdn.discordapp.com/attachments/708017680677863505/709793353478176768/lori_github_logo.png">
 <br>
 
-<h1 align="center">⭐ Loritta Morenitta ⭐</h1>
+<h1 align="center">**__🔨 Beta™__**</h1>
 
 <p align="center">
 <a href="https://discordbots.org/bot/883010250226143313?utm_source=widget">
