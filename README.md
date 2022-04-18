@@ -71,6 +71,8 @@ _Adding the Beta makes your server more perfect than it already is!_
 * Run using `node index.js`
 * Check the console to see if there are any errors... Well, we hope that there are none!
 
+<hr>
+
 <p align="center">
-<img src="https://cdn.discordapp.com/attachments/708017680677863505/709834156145770534/lori_deitada.png">
+<img src="https://cdn.discordapp.com/attachments/948985394962260009/965704384891748452/beta_github02.png">
 </p>
