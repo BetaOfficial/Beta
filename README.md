@@ -6,8 +6,8 @@
 <h1 align="center">⭐ Loritta Morenitta ⭐</h1>
 
 <p align="center">
-<a href="https://discordbots.org/bot/297153970613387264?utm_source=widget">
-<img src="https://discordbots.org/api/widget/297153970613387264.png?test=123456" alt="Discord Bots" />
+<a href="https://discordbots.org/bot/883010250226143313?utm_source=widget">
+<img src="https://discordbots.org/api/widget/883010250226143313.png?test=123456" alt="Discord Bots" />
 </a>
  </p>
 <p align="center">
