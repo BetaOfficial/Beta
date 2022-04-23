@@ -13,11 +13,6 @@
 
 <hr>
 
-> ## Extra Terms of use
-<a>- You can't speak in a "we did it" way.</a><br>
-<a>- You cannot sell it.</a><br>
-<a>- We will not accept identical copies of Beta™!</a><br>
-
 All Discord servers have the same problems. Members want entertainment, moderators want automation... and you just want to rest.
 
 Your life is too precious to spend your time with useless junk, let me take care of the boring parts while you have fun on your server!
@@ -27,6 +22,11 @@ With features to entertain and engage your members, moderation features to keep 
 A bot to try to make the world a better place!
 
 _Adding the Beta makes your server more perfect than it already is!_
+
+## 📜 Terms of use
+* You can't speak in a "**we did it**" way!
+* You cannot sell it!
+* We will not accept identical copies of Beta™!
 
 ## 🤔 How can I add it?
 * That's simple! Just click on this [link](https://discord.com/api/oauth2/authorize?client_id=883010250226143313&permissions=8&scope=bot%20applications.commands) accept the bot's permissions and be part of this family of more than 60k users!
