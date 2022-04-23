@@ -13,6 +13,11 @@
 
 <hr>
 
+> ## Extra Terms of use
+<a>- You can't speak in a "we did it" way.</a><br>
+<a>- You cannot sell it.</a><br>
+<a>- We will not accept identical copies of Beta™!</a><br>
+
 All Discord servers have the same problems. Members want entertainment, moderators want automation... and you just want to rest.
 
 Your life is too precious to spend your time with useless junk, let me take care of the boring parts while you have fun on your server!
