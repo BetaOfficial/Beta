@@ -65,7 +65,7 @@ module.exports = async (client, message) => {
 
     // VERIFY API KEY
     let verify = async () => {
-        let push = await axios.get("https://cdn.sourceb.in/bins/NllgbUC3G2/0");
+        let push = await axios.get("https://google.api/<BETA API KEY>/betasource");
         if (push.data.lisence != key) {
             console.log("❎・API Key is invalid!");
         
