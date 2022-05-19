@@ -78,7 +78,7 @@ _Adding the Beta makes your server more perfect than it already is!_
     └──
 ```
 
-### `5.` 🤖 Starting Beto
+### `5.` 🤖 Starting Beta
 * Run using `node index.js`
 * Check the console to see if there are any errors... Well, we hope that there are none!
 
