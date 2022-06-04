@@ -51,31 +51,36 @@ _Adding the Beta makes your server more perfect than it already is!_
 * Now run: `npm install` and wait for the terminal to download all dependencies!
 
 #### ⚠️ Values that you *need* to change before starting the Beta!
-```ascii
-📁 Database
-└── config.json
-    ├── 
-    │   * token: <Your Token>
-    │   * prefix: <Your Prefix>
-    │   * botId: <Your bot ID>
-    │   * botSecret: <Your bot Secret ID>
-    │   * key: <Beta API key> (Ask the bot creator for access and explain your reason to him! "Roycy#6768 (758662985568092180) or Roycy#8742 (916007798326841346)")
-    └──
-📁 Database
-└── lavalink.json
-    ├── 
-    │   * node01: <Adress lavalink>
-    │   * password01: <Password lavalink>
-    │   * port01: <Port lavalink>
-    │   * secure01: <True or False>
-    |   * ...
-    └──
-📁 Database
-└── spotify.json
-    ├── 
-    │   * clientID: <Your id for Spotify Developer>
-    │   * clientSecret: <Your client secret for Spotify Developer>
-    └──
+#### database/config.js:
+```js
+module.exports = {
+    emoji: {
+        yes: '<:yes:930170194784043048>',
+        no: '<:no:930170194494636152>',
+        load: '<a:loading:972914112193495130>',
+    },
+    bot: {
+        token: 'YOUR BOT TOKEN',
+        prefix: 'YOUR BOT PREFIX',
+        id: 'YOUR BOT ID',
+        secret: 'YOUR BOT SECRET',
+        version: 'YOUR BOT VERSION'
+    },
+    nodes: {
+        node1: 'local.host', // NODE 01
+        password1: 'YOUR PASSWORD',
+        port1: 80,
+        secure1: false,
+    },
+    owners: {
+        ID1: 'OWNER ID1',
+        ID2: 'OWNER ID2',
+    },
+    spotify: {
+        clientID: 'CLIENT ID',
+        clientSecret: 'CLIENT SECRET'
+    },
+};
 ```
 
 ### `5.` 🤖 Starting Beta
