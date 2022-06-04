@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 module.exports = async (client, guild) => {
     // BOT JOIN GUILD => START
     const NOW = Date.now() //Logs
-    let log = client.channels.cache.get("966395622351593553")
+    let log = client.channels.cache.get("972899411745181696")
     let logsEMBED = new Discord.MessageEmbed()
     .setTitle(`Log - Join Server`)
     .setColor("WHITE")

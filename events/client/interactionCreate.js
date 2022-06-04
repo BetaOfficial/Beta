@@ -1,7 +1,53 @@
 const db = require("quick.db")
 const Discord = require("discord.js")
+const discordModals = require('discord-modals')
 module.exports = async (client, interaction) => {
     let language = db.get(`language_${interaction.guild.id}`);
+
+    if (!interaction.isCommand()) {
+
+    } else {
+        
+        const command = client.slash.get(interaction.commandName);
+        if (!command) return interaction.reply({ content: 'an Error check console' });
+        
+        if (command.ownerOnly) {
+            if (interaction.user.id !== client.config.ownerID) {
+                return interaction.reply({ content: "This command only for Bot Owner!", ephemeral: true });
+            }
+        }
+        
+        const args = [];
+        
+        for (let option of interaction.options.data) {
+            if (option.type === 'SUB_COMMAND') {
+                if (option.name) args.push(option.name);
+                option.options?.forEach(x => {
+                    if (x.value) args.push(x.value);
+                });
+            } else if (option.value) args.push(option.value);
+        }
+        
+        try {
+            command.run(client, interaction, args)
+            const NOW = Date.now()
+            let log = client.channels.cache.get("965376451702583317")
+            let logsEMBED = new Discord.MessageEmbed()
+            .setTitle(`Log - Command Slash Executed`)
+            .setColor("WHITE")
+            .setThumbnail(interaction.user.displayAvatarURL())
+            .setDescription(`**See information on who executed this command:**`)
+            .addFields(
+                { name: 'User:', value: `\`${interaction.user.username}#${interaction.user.discriminator}\` (\`${interaction.user.id}\`)`, inline: false },
+                { name: 'Executed:', value: `\`/${command} ${args}\``, inline: false },
+                { name: 'Server:', value: `\`${interaction.guild.name}\` (\`${interaction.guild.id}\`)`, inline: false },
+            )
+            .setTimestamp(Date.now())
+            log.send({ embeds: [logsEMBED] })
+        } catch (e) {
+            interaction.reply({ content: e.message });
+        }
+    }
         
     if (language === "pt-BR") { // PT-BR
 

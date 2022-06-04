@@ -1,12 +1,12 @@
 const Discord = require("discord.js")
 const db = require("quick.db")
-const ownerID = require("../../database/owners.json")
+const config = require("../../database/config");
 const Timeout = new Discord.Collection()
 module.exports = async (client, message) => { 
     let prefix = db.get(`prefix_${message.guild.id}`) || "-"
     let language = db.get(`language_${message.guild.id}`)
     let channelcommands = db.fetch(`channelcommands_${message.guild.id}`)
-    let owner = ownerID.ID1 || ownerID.ID2
+    let owner = config.owners.ID1 || config.owners.ID2
 
     // HANDLER EVENT => START
     try {
@@ -94,7 +94,7 @@ module.exports = async (client, message) => {
                 }, command.cooldown)
 
                 const NOW = Date.now()
-                let log = client.channels.cache.get("966395710465536070")
+                let log = client.channels.cache.get("972899197504335933")
                 let logsEMBED = new Discord.MessageEmbed()
                 .setTitle(`Log - Command Executed`)
                 .setColor("WHITE")
@@ -109,7 +109,7 @@ module.exports = async (client, message) => {
                 log.send({ embeds: [logsEMBED] })
             } catch (err) {
                 const NOW = Date.now()
-                let log = client.channels.cache.get("966395710465536070")
+                let log = client.channels.cache.get("972899197504335933")
                 let logsEMBED = new Discord.MessageEmbed()
                 .setTitle(`Log - Command not found`)
                 .setColor("RED")

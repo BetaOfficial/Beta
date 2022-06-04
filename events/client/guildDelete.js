@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 module.exports = async (client, guild) => {
     // BOT LEAVE GUILD => START
     const NOW = Date.now()
-    let log = client.channels.cache.get("966395666689568860")
+    let log = client.channels.cache.get("972899505605316748")
     let logsEMBED = new Discord.MessageEmbed()
     .setTitle(`Log - Leave Server`)
     .setColor("WHITE")

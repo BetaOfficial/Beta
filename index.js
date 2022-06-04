@@ -1,22 +1,20 @@
 const db = require("quick.db")
 const Discord = require("discord.js")
-const client = new Discord.Client({intents: 32767}); //Beta
-const config = require("./database/config.json");
-const e = require("./database/emojis.json")
-const lavalink = require("./database/lavalink.json")
-const spotify = require("./database/spotify.json")
-const fs = require("fs");
-const {readdirSync} = require("fs");
-const Spotify = require("erela.js-spotify");
-const AppleMusic = require("erela.js-apple");
-const Deezer = require("erela.js-deezer");
-const Facebook = require("erela.js-facebook");
-const filter  = require("erela.js-filters");
+const client = new Discord.Client({intents: 32767})
+const config = require('./database/config')
+const { convertTime } = require("./structures/convert.js")
+const fs = require("fs")
+const Spotify = require("erela.js-spotify")
+const AppleMusic = require("erela.js-apple")
+const Deezer = require("erela.js-deezer")
+const Facebook = require("erela.js-facebook")
 const { Manager } = require("erela.js")
+const { inviteTracker } = require("discord-inviter")
+const tracker = new inviteTracker(client)
+const clientID = config.spotify.clientID
+const clientSecret = config.spotify.clientSecret
 
-client.login(config.token_canary);  
-
-/////////////// ANTI - CRASH ///////////////
+client.login(config.bot.token); 
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('=====[ ANTI CRASH ]=====')
@@ -42,36 +40,15 @@ process.on('multipleResolves', (type, promise, reason) => {
     console.log('========================')
 })
 
-////////////////////////////////////////////
-
 // ========================[ HANDLER ]======================= //
 
-readdirSync('./events/client').forEach(f => { let pull = require(`./events/client/${f}`);client.on(f.split('.')[0], pull.bind(null, client)); } )
+const slash = require("./handlers/slash")
 
-client.commands = new Discord.Collection(); // Handler | Start
+client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
-client.categories = fs.readdirSync(`./commands/`);
-
-fs.readdirSync('./commands/').forEach(local => {
-    const comandos = fs.readdirSync(`./commands/${local}`).filter(arquivo => arquivo.endsWith('.js'))
-
-    for(let file of comandos) {
-        let puxar= require(`./commands/${local}/${file}`)
-
-        if(puxar.name) {
-            client.commands.set(puxar.name, puxar)
-        } 
-        if(puxar.aliases && Array.isArray(puxar.aliases))
-        puxar.aliases.forEach(x => client.aliases.set(x, puxar.name))
-    } 
-})
-
-// ========================================================== //
-
-// =======================[ LAVALINK ]======================= //
-
-let clientID = spotify.clientID
-let clientSecret = spotify.clientSecret
+client.slash = new Discord.Collection();
+client.categories = fs.readdirSync('./commands/');
+slash.loadSlashCommands(client);
 
 client.manager = new Manager({
     plugins: [
@@ -81,43 +58,75 @@ client.manager = new Manager({
         }),
         new Deezer(),
         new AppleMusic(),
-        new filter(),
         new Facebook()
     ],
     nodes: [
-        { host: `${lavalink.node01}`, port: lavalink.port01, password: `${lavalink.password01}`, secure: lavalink.secure01 },
-        { host: `${lavalink.node02}`, port: lavalink.port02, password: `${lavalink.password02}`, secure: lavalink.secure02 },
-        { host: `${lavalink.node03}`, port: lavalink.port03, password: `${lavalink.password03}`, secure: lavalink.secure03 },
-        { host: `${lavalink.node04}`, port: lavalink.port04, password: `${lavalink.password04}`, secure: lavalink.secure04 },
-        { host: `${lavalink.node05}`, port: lavalink.port05, password: `${lavalink.password05}`, secure: lavalink.secure05 },
+        { host: `${config.nodes.node1}`, port: config.nodes.port1, password: `${config.nodes.password1}`, secure: config.nodes.secure1 },
     ],
     send(id, payload) {
         const guild = client.guilds.cache.get(id);
         if (guild) guild.shard.send(payload);
     },
+});
+
+fs.readdirSync('./commands/prefixCommands').forEach(local => {
+    const commands = fs.readdirSync(`./commands/prefixCommands/${local}`).filter(file => file.endsWith('.js'))
+    for(let file of commands) {
+        let load = require(`./commands/prefixCommands/${local}/${file}`)
+        if (load.name) {
+            client.commands.set(load.name, load)
+            console.log(`[ PrefixCommand Loaded ] => ${file}`);
+        } else {
+            console.log(`[ PrefixCommand Error ] => ${file}`);
+            continue;
+	}
+        if (load.aliases && Array.isArray(load.aliases)) {
+            load.aliases.forEach(x => client.aliases.set(x, load.name))
+        }
+    }
 })
+
+const events = fs.readdirSync('./events/client').filter(file => file.endsWith('.js'));
+const invite = fs.readdirSync('./events/invite').filter(file => file.endsWith('.js'));
+const logs = fs.readdirSync('./events/logs').filter(file => file.endsWith('.js'));
+
+for (const file of events) {
+    console.log(`[ EVENT LOADED ] - ${file}`);
+    const event = require(`./events/client/${file}`);
+    client.on(file.split(".")[0], event.bind(null, client));
+};
+for (const file of invite) {
+    console.log(`[ EVENT LOADED ] - ${file}`);
+    const event = require(`./events/invite/${file}`);
+    tracker.on(file.split(".")[0], event.bind(null, client));
+};
+for (const file of logs) {
+    console.log(`[ EVENT LOADED ] - ${file}`);
+    const event = require(`./events/logs/${file}`);
+    tracker.on(file.split(".")[0], event.bind(null, client));
+};
 
 client.manager.on("nodeConnect", node => console.log(`-> Node: ${node.options.identifier} ready!`))
 client.manager.on("nodeError", (node, error) => console.log(`-> Error: ${node.options.identifier} error: ${error.message}`))
 
-client.manager.on("trackStart", (player, track) => { // Queue Start (Lavalink) | Start
+// =======================[ LAVALINK ]======================= //
+client.manager.on("trackStart", (player, track) => {
     let canal = client.channels.cache.get(player.textChannel) 
     let language = db.get(`language_${canal.guild.id}`); 
     if (language === "pt-BR") { // PT-BR
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.yes} **Tocando agora: \`${track.title}\`**`)
+        .setDescription(`${config.emoji.yes} **Tocando agora: \`${track.title}\` \`(${convertTime(track.duration, true)})\`**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
     if (!language || language === "en") { // EN
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.yes} **Playing now: \`${track.title}\`**`)
+        .setDescription(`${config.emoji.yes} **Playing now: \`${track.title}\` \`(${convertTime(track.duration, true)})\`**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
-}) // Queue Start (Lavalink) | End
-
-client.manager.on("queueEnd", (player) => { // Queue End (Lavalink) | Start
+})
+client.manager.on("queueEnd", (player) => { 
     let canal = client.channels.cache.get(player.textChannel) 
     let language = db.get(`language_${canal.guild.id}`);
     
@@ -126,19 +135,18 @@ client.manager.on("queueEnd", (player) => { // Queue End (Lavalink) | Start
 
     if (language === "pt-BR") { // PT-BR
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.no} **A música acabou e eu saí do canal de voz!**`)
+        .setDescription(`${config.emoji.no} **A música acabou e eu saí do canal de voz!**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
     if (!language || language === "en") { // EN
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.no} **The music ended and I left the voice channel!**`)
+        .setDescription(`${config.emoji.no} **The music ended and I left the voice channel!**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
-}) // Queue End (Lavalink) | End
-
-client.manager.on("playerMove", (player, currentChannel, newChannel) => { // End Call (Lavalink) | Start
+}) 
+client.manager.on("playerMove", (player, currentChannel, newChannel) => {
     let canal = client.channels.cache.get(player.textChannel) 
     player.voiceChannel = client.channels.cache.get(newChannel);
     let language = db.get(`language_${canal.guild.id}`);
@@ -146,62 +154,26 @@ client.manager.on("playerMove", (player, currentChannel, newChannel) => { // End
     if (language === "pt-BR") { // PT-BR
         player.destroy()
         player.disconnect()
-        player.reset()
 
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.no} **Fui removido do canal ou tentaram me transferir para outro canal de voz! Então eu parei de tocar!**`)
+        .setDescription(`${config.emoji.no} **Fui removido do canal ou tentaram me transferir para outro canal de voz! Então eu parei de tocar!**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
     if (!language || language === "en") { // EN
         player.destroy()
         player.disconnect()
-        player.reset()
 
         let startqueue_embed = new Discord.MessageEmbed()
-        .setDescription(`${e.no} **I was removed from the channel or they tried to move me to another voice channel! So I stopped playing!**`)
+        .setDescription(`${config.emoji.no} **I was removed from the channel or they tried to move me to another voice channel! So I stopped playing!**`)
         .setColor("WHITE")
         client.channels.cache.get(player.textChannel).send({ embeds: [startqueue_embed] })
     }
-}) // End Call (Lavalink) | End
-
+}) 
 client.once("ready", () => {
     console.log("-> Lavalink is online and ready!");
     client.manager.init(client.user.id);
 })
 
 client.on("raw", (d) => client.manager.updateVoiceState(d));
-
 // ========================================================== //
-
-var { inviteTracker } = require("discord-inviter"), // Inviter logger | Start
-tracker = new inviteTracker(client);
-tracker.on("guildMemberAdd", async (member, inviter, invite, error) => {
-    let language = db.get(`language_${member.guild.id}`);
-    if (language === "pt-BR") { // PT-BR
-
-        let canal_invite_pt = db.get(`beta_invite_logger_${member.guild.id}`);
-        if (!canal_invite_pt) {
-            return
-        }
-        if(error) return console.error(error);
-        Msg = `> **Bem vindo <@${member.id}>!**\n> **convidado por: \`${inviter.tag}\`**\n> **Agora \`${inviter.tag}\` tem \`${invite.count}\` convite(s)**`;
-        if (member.user.bot) {
-            Msg = `**Bem vindo <@${member.id}>! convidado por: \`${inviter.tag}\`**`;
-        }
-        client.channels.cache.get(canal_invite_pt).send({ content: Msg })
-    }
-    if (!language || language === "en") { // EN
-
-        let canal_invite_en = db.get(`beta_invite_logger_${member.guild.id}`);
-        if (!canal_invite_en) {
-            return
-        }
-        if(error) return console.error(error);
-        Msg = `> **Welcome <@${member.id}>!**\n> **Invited by: \`${inviter.tag}\`**\n> **Now \`${inviter.tag}\` has \`${invite.count}\` invite(s)**`;
-        if (member.user.bot) {
-            Msg = `**Welcome <@${member.id}>! invited by \`${inviter.tag}\`**`;
-        }
-        client.channels.cache.get(canal_invite_en).send({ content: Msg })
-    }
-}) // Inviter logger | End

@@ -7,54 +7,39 @@ module.exports = async (client, member) => {
     let beta_welcome_channel = db.get(`beta_welcome_${member.guild.id}`);
     let server_counter = member.guild.memberCount;
     let server = member.guild.name;
-    if (!beta_welcome_channel) return;
+    if (!beta_welcome_channel) {
 
-    if (language === "pt-BR") { // PT-BR
-        let embed = new Discord.MessageEmbed()
-        .setTitle(`**Bem vindo!**`)
-        .setDescription(`**Bem vindo ${member.user} ao servidor: \n\`${server}\`!**\n\n`)
-        .addField(`**Você é o \`${server_counter}*\` membro deste servidor!**`, '**Eu espero que goste do servidor!**')
-        .setColor("WHITE")
-        .setThumbnail(member.user.avatarURL())
-        .setImage('https://i.imgur.com/mfcnP6O.jpg')
-        client.channels.cache.get(beta_welcome_channel).send({ embeds: [embed] })
-    }
-    if (!language || language === "en") { // EN
-        let embed = new Discord.MessageEmbed()
-        .setTitle(`**Welcome!**`)
-        .setDescription(`**Welcome ${member.user} to the server \n\`${server}\`!**\n\n`)
-        .addField(`**You are the \`${server_counter}th\` member of that server!**`, '**I hope you like this server!**')
-        .setColor("WHITE")
-        .setThumbnail(member.user.avatarURL())
-        .setImage('https://i.imgur.com/mfcnP6O.jpg')
-        client.channels.cache.get(beta_welcome_channel).send({ embeds: [embed] })
+    } else {
+        if (language === "pt-BR") { // PT-BR
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`**Bem vindo!**`)
+            .setDescription(`**Bem vindo ${member.user} ao servidor: \n\`${server}\`!**\n\n`)
+            .addField(`**Você é o \`${server_counter}*\` membro deste servidor!**`, '**Eu espero que goste do servidor!**')
+            .setColor("WHITE")
+            .setThumbnail(member.user.avatarURL())
+            .setImage('https://i.imgur.com/mfcnP6O.jpg')
+            client.channels.cache.get(beta_welcome_channel).send({ embeds: [embed] })
+        }
+        if (!language || language === "en") { // EN
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`**Welcome!**`)
+            .setDescription(`**Welcome ${member.user} to the server \n\`${server}\`!**\n\n`)
+            .addField(`**You are the \`${server_counter}th\` member of that server!**`, '**I hope you like this server!**')
+            .setColor("WHITE")
+            .setThumbnail(member.user.avatarURL())
+            .setImage('https://i.imgur.com/mfcnP6O.jpg')
+            client.channels.cache.get(beta_welcome_channel).send({ embeds: [embed] })
+        }
     }
     // NEW MEMBER => END
 
-    // NEW MEMBER LOGS => START
-    let logs = db.get(`channellogs_${member.guild.id}`)
-    if (!logs) return;
-    if (language === "pt-BR") { // PT-BR
-        let server_counter = member.guild.memberCount;
-    
-        let embed = new Discord.MessageEmbed()
-        .setTitle(`**Logs - Usuário entrou**`)
-        .setDescription(`**\`${member.user.tag}\` entrou e agora existem \`${server_counter}\` membros neste servidor!**`)
-        .setColor("WHITE")
-        .setThumbnail(member.user.avatarURL())
-        .setTimestamp()
-        client.channels.cache.get(logs).send({ embeds: [embed] })
-    }
-    if (!language ||language === "en") { // EN
-        let server_counter = member.guild.memberCount;
+    // AUTO ROLE => START
+    let roleID = db.get(`autorole_${member.guild.id}`)
+    if (!roleID) {
 
-        let embed = new Discord.MessageEmbed()
-        .setTitle(`**Logs - User Join**`)
-        .setDescription(`**\`${member.user.tag}\` joined and now we have \`${server_counter}\` members**`)
-        .setColor("WHITE")
-        .setThumbnail(member.user.avatarURL())
-        .setTimestamp()
-        client.channels.cache.get(logs).send({ embeds: [embed] })
+    } else {
+        let role = member.guild.roles.cache.find(r => r.id === roleID)
+        member.roles.add(role)
     }
-    // NEW MEMBER LOGS => END
+    // AUTO ROLE => END
 }
